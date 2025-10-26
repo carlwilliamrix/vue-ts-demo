@@ -18,7 +18,7 @@ const events = ref<Event[]>([]);
 
 const filter = ref<EventFilter>("all");
 
-// Computed value that only changes if its dependecies change
+// Computed value that only changes if its dependencies change
 const totalDone = computed(() => events
   .value
   .reduce((total, event) => event.active ? total + 1 : total, 0));

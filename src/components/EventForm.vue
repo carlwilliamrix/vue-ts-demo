@@ -1,30 +1,24 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 
-// So that parent components can listen to events from this component:
-// Emit events, Compiler Macro that is built in to Vue
-// Can pass in a typescript type to define the types of emits
-// Here we emit addEvents
+// Built in compiler Macro. 
+// Emits events to parent components (typed). 
 const emit = defineEmits<{
   addEvents: [newTask: string];
 }>();
 
-// State variables, to bind input to state variables see in HTML
-// Built in directive is v-model
-// Pass in a ref, with input this will update the ref value on input change
-// Adding a change handler and updating the value
+// Reactive state for input and error message
+// 'ref' makes these value reactive
 const eventName = ref("");
 const error = ref("");
 
-// We want to listen when this form is submitted
-// For that we use the @ sign to add a DOM event
-// When event is triggered we call this function
-// We must use .value to get the value from a ref since it is essentially a object wrapper around a primitive value
+// Handles form submission from DOM event
+// Use .value to get the value from ref since it is 
+// essentially an object wrapper around a primitive value
 function formSubmitted() {
     if(eventName.value.trim()) {
-    // Listen to this emit in the parent component
+    // Trigger event for parent component
     emit('addEvents', eventName.value);
-    //alert(`Creating event: ${eventName.value}`);
     } else {
         // Use v-if directive to conditionally show error message
         // Change event handler removes the error when user starts typing
