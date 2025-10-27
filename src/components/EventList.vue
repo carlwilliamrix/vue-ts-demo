@@ -2,18 +2,29 @@
 import { TransitionGroup } from 'vue';
 import type { Event } from '../types';
 
-// Compiler Macro to define props for this component
+// defineProps gives us a typed interface for the component inputs.
+// This makes it clear that this component expects an array of Event objects.
 const props = defineProps<{
-  events: Event[]
+  events: Event[];
 }>();
 
-// Parent can look for the string an in turn update the property
+// defineEmits declares the events this component may emit. Keeping these
+// typed helps avoid mistakes when emitting event names or payloads.
 const emits = defineEmits<{
-  toggleEvent:[id: string];
+  // Emitted when a user toggles an event's active state
+  toggleEvent: [id: string];
+  // Emitted when a user requests an event removal
   removeEvents: [id: string];
 }>();
 </script>
 
+<!--
+  Template notes:
+  - We use 'TransitionGroup' to animate items entering and leaving the list.
+  - 'v-for' iterates over 'props.events' and requires a stable ':key' (here 'event.id').
+  - Inputs and buttons call the typed 'emits' function to notify the parent component.
+  - Class bindings (':class') are used to reflect the event's 'active' state in the UI.
+-->
 <template>
     <TransitionGroup name="list" tag="div" class="event-list">
       <article v-for="event in events" class="event" :key="event.id">

@@ -1,46 +1,54 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 
-// Built in compiler Macro. 
-// Emits events to parent components (typed). 
+// defineEmits is a compiler macro that declares the events this component can emit. 
 const emit = defineEmits<{
-  addEvents: [newTask: string];
+    // The parent listens for 'add-events'. Payload is the new event name as a string.
+    addEvents: [newTask: string];
 }>();
 
-// Reactive state for input and error message
-// 'ref' makes these value reactive
-const eventName = ref("");
-const error = ref("");
+// Reactive state: 'ref' wraps a primitive so Vue can track changes.
+// Use '.value' in the script to read/write, templates unwrap refs automatically.
+const eventName = ref('');
+const error = ref('');
 
-// Handles form submission from DOM event
-// Use .value to get the value from ref since it is 
-// essentially an object wrapper around a primitive value
+// Called when the user submits the form. We validate the input and either
+// emit the typed event to the parent or set a local error message.
 function formSubmitted() {
-    if(eventName.value.trim()) {
-    // Trigger event for parent component
-    emit('addEvents', eventName.value);
+    // Trim input and ensure it's not empty
+    if (eventName.value.trim()) {
+        // Emit the event with the new event name. Parent component handles adding it.
+        emit('addEvents', eventName.value);
+        // Optionally clear the input after creating an event
+        eventName.value = '';
     } else {
-        // Use v-if directive to conditionally show error message
-        // Change event handler removes the error when user starts typing
-        error.value = "Please provide a valid name for the event.";
+        // Set a local error message which the template displays conditionally
+        error.value = 'Please provide a valid name for the event.';
     }
 }
 </script>
 
 <template>
+    <!--
+        Simple form to create a new event.
+        - '@submit.prevent' prevents page reload and calls 'formSubmitted'.
+        - 'v-model' binds the input to the 'eventName' ref (two-way).
+        - ':aria-invalid' improves accessibility when the input is invalid.
+        - '@input' resets the error when the user starts typing.
+    -->
     <form @submit.prevent="formSubmitted">
         <label>
-            New Event       
-            <input 
-                v-model="eventName" 
-                name="event-name" 
-                placeholder="Event Name" 
+            New Event
+            <input
+                v-model="eventName"
+                name="event-name"
+                placeholder="Event Name"
                 :aria-invalid="!!error || undefined"
                 @input="error = ''"
-            >
-            <small v-if="error" id="invalid-helper">
-                {{ error}}
-            </small>
+            />
+
+            <!-- Error helper: shown only when 'error' is non-empty -->
+            <small v-if="error" id="invalid-helper">{{ error }}</small>
         </label>
         <div class="button-container">
             <button>Create Event: {{ eventName }}</button>

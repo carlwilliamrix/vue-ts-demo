@@ -1,3 +1,4 @@
+// Define core types with, Typescript helping to maintain type safety
 export interface Event {
     id: string;
     name: string;
